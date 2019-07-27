@@ -80,7 +80,7 @@ void turn90Right() {
     gyro.update();
     float current = gyro.getAngleZ();
     Serial.println(current);
-    if (current >= -90.25 && current <= -89.75) {
+    if (current >= -92.5 && current <= -87.5) {
       stopMotors();
       moving = false;
     } else {
@@ -102,7 +102,7 @@ void turn90Left() {
   while (moving) {
     gyro.update();
     float current = gyro.getAngleZ();
-    if (current >= 89.75 && current <= 90.25) {
+    if (current >= 87.5 && current <= 92.5) {
       rightMotor.run(1 * 200 * rightMotorMultiplier);
       leftMotor.run(-1 * 200 * leftMotorMultiplier);
     } else {
@@ -125,7 +125,7 @@ void turn180() {
     gyro.update();
     float current = gyro.getAngleZ();
     Serial.println(current);
-    if (current <= 179.75 && current >= -179.75) {
+    if (current <= 177.5 && current >= -177.5) {
       rightMotor.run(-1 * 200 * rightMotorMultiplier);
       leftMotor.run(1 * 200 * leftMotorMultiplier);
     } else {
@@ -155,7 +155,7 @@ void forwardToStop() {
     stopMotors();
   }
 
-}
+} else {
   bool object = false;
   rightMotor.run(motorSpeed * rightMotorMultiplier);
   leftMotor.run(motorSpeed * leftMotorMultiplier);
@@ -168,7 +168,8 @@ void forwardToStop() {
     if (distance > 399) { findDropZone(); }
   }
 }
-
+clearCache();
+}
 float forwardsf = 0;
 float left = 0;
 float right = 0;
