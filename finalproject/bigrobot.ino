@@ -237,9 +237,17 @@ void setup() {
 bool waitingForCarrier = true;
 
 void loop() {
+  clearCache();
   // put your main code here, to run repeatedly:
   float distance = ultra.distanceCm();
-  
+
+  uint8_t ReceiverCode;
+
+  if(infraredReceiverDecode.available()) {
+  if (IR_BUTTON_A) {
+    dropItem();
+  }
+  }
   if (waitingForCarrier == true) {
     if (distance <= 7.50) {
       delay(1000);
@@ -285,5 +293,40 @@ void loop() {
       findDropZone();
     }
     delay(50); 
+  }
+}
+
+void clearCache(){
+
+  while(infraredReceiverDecode.available())
+  {
+      uint8_t ReceiverCode;
+    ReceiverCode = infraredReceiverDecode.read();
+    switch(ReceiverCode)
+    {
+       case IR_BUTTON_A:  break;
+       case IR_BUTTON_B:  break;
+       case IR_BUTTON_C:  break;
+       case IR_BUTTON_D:  break;
+       case IR_BUTTON_E: break;
+       case IR_BUTTON_F:  break;
+       case IR_BUTTON_SETTING:  break;
+       case IR_BUTTON_UP:  break;
+       case IR_BUTTON_DOWN:  break;
+       case IR_BUTTON_LEFT:  break;
+       case IR_BUTTON_RIGHT:  break;
+       case IR_BUTTON_0:  break;
+       case IR_BUTTON_1:  break;
+       case IR_BUTTON_2: break;
+       case IR_BUTTON_3:  break;
+       case IR_BUTTON_4:  break;
+       case IR_BUTTON_5:  break;
+       case IR_BUTTON_6:  break;
+       case IR_BUTTON_7:  break;
+       case IR_BUTTON_8:  break;
+       case IR_BUTTON_9:  break;
+       default: break;
+    }
+
   }
 }
