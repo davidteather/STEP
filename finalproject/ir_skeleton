@@ -1,0 +1,141 @@
+#include "MeMegaPi.h"
+#include "SoftwareSerial.h"
+
+// Serials
+MeInfraredReceiver infraredReceiverDecode(PORT_8);
+MeMegaPiDCMotor armMotor(PORT1B);
+MeMegaPiDCMotor leftMotor(PORT2B);
+MeMegaPiDCMotor rightMotor(PORT3B);
+MeMegaPiDCMotor clawMotor(PORT4B);
+
+// Motor Multipliers
+int leftMotorMultiplier = 1;
+int rightMotorMultiplier = -1;
+float motorSpeed = 200;
+float standardDelay = 600;
+
+void setup()
+{
+  infraredReceiverDecode.begin();
+  Serial.begin(9600);
+  Serial.println("InfraredReceiverDecode Start!");
+}
+
+void stopMotors() {
+  rightMotor.run(0);
+  leftMotor.run(0);
+  clawMotor.run(0);
+  armMotor.run(0);
+}
+
+void forwards() {
+  rightMotor.run(motorSpeed * rightMotorMultiplier);
+  leftMotor.run(motorSpeed * leftMotorMultiplier);
+  delay(standardDelay);
+  stopMotors();
+}
+
+void backwards() {
+  rightMotor.run(-1 * motorSpeed * rightMotorMultiplier);
+  leftMotor.run(-1 * motorSpeed * leftMotorMultiplier);
+  delay(standardDelay);
+  stopMotors();
+}
+
+void clawup() {
+  armMotor.run(-1 * 100 * rightMotorMultiplier);
+  delay(800);
+  stopMotors();
+}
+
+void clawdown() {
+  armMotor.run(1 * 100 * rightMotorMultiplier);
+  delay(8100);
+  stopMotors();
+}
+
+void clawOpen() {
+  clawMotor.run(-200);
+  delay(500);
+  stopMotors();
+}
+
+void clawClose() {
+  clawMotor.run(200);
+  delay(500);
+  stopMotors();
+}
+
+void loop()
+{
+  uint8_t ReceiverCode;
+
+  if(infraredReceiverDecode.available())
+  {
+    ReceiverCode = infraredReceiverDecode.read();
+    switch(ReceiverCode)
+    {
+       case IR_BUTTON_A: Serial.println("Press A."); clawup(); break;
+       case IR_BUTTON_B: Serial.println("Press B."); clawdown(); break;
+       case IR_BUTTON_C: Serial.println("Press C."); break;
+       case IR_BUTTON_D: Serial.println("Press D."); clawOpen(); break;
+       case IR_BUTTON_E: Serial.println("Press E."); clawClose(); break;
+       case IR_BUTTON_F: Serial.println("Press F."); break;
+       case IR_BUTTON_SETTING: Serial.println("Press Setting."); break;
+       case IR_BUTTON_UP: Serial.println("Press Up. Moving Forwards"); forwards(); break;
+       case IR_BUTTON_DOWN: Serial.println("Press Down."); backwards(); break;
+       case IR_BUTTON_LEFT: Serial.println("Press Left."); break;
+       case IR_BUTTON_RIGHT: Serial.println("Press Right."); break;
+       case IR_BUTTON_0: Serial.println("Press 0."); break;
+       case IR_BUTTON_1: Serial.println("Press 1."); break;
+       case IR_BUTTON_2: Serial.println("Press 2."); break;
+       case IR_BUTTON_3: Serial.println("Press 3."); break;
+       case IR_BUTTON_4: Serial.println("Press 4."); break;
+       case IR_BUTTON_5: Serial.println("Press 5."); break;
+       case IR_BUTTON_6: Serial.println("Press 6."); break;
+       case IR_BUTTON_7: Serial.println("Press 7."); break;
+       case IR_BUTTON_8: Serial.println("Press 8."); break;
+       case IR_BUTTON_9: Serial.println("Press 9."); break;
+       default: break;
+    }
+  }
+  clearCache();
+}
+
+
+
+
+void clearCache(){
+
+  while(infraredReceiverDecode.available())
+  {
+      uint8_t ReceiverCode;
+    ReceiverCode = infraredReceiverDecode.read();
+    switch(ReceiverCode)
+    {
+       case IR_BUTTON_A:  break;
+       case IR_BUTTON_B:  break;
+       case IR_BUTTON_C:  break;
+       case IR_BUTTON_D:  break;
+       case IR_BUTTON_E: break;
+       case IR_BUTTON_F:  break;
+       case IR_BUTTON_SETTING:  break;
+       case IR_BUTTON_UP:  break;
+       case IR_BUTTON_DOWN:  break;
+       case IR_BUTTON_LEFT:  break;
+       case IR_BUTTON_RIGHT:  break;
+       case IR_BUTTON_0:  break;
+       case IR_BUTTON_1:  break;
+       case IR_BUTTON_2: break;
+       case IR_BUTTON_3:  break;
+       case IR_BUTTON_4:  break;
+       case IR_BUTTON_5:  break;
+       case IR_BUTTON_6:  break;
+       case IR_BUTTON_7:  break;
+       case IR_BUTTON_8:  break;
+       case IR_BUTTON_9:  break;
+       default: break;
+    }
+
+  }
+}
