@@ -45,25 +45,25 @@ void backwards() {
 
 void clawup() {
   armMotor.run(-1 * 200 * rightMotorMultiplier);
-  delay(1800);
+  delay(2000);
   stopMotors();
 }
 
 void clawdown() {
   armMotor.run(1 * 200 * rightMotorMultiplier);
-  delay(1800);
+  delay(2000);
   stopMotors();
 }
 
 void clawOpen() {
   clawMotor.run(-200);
-  delay(1400);
+  delay(1600);
   stopMotors();
 }
 
 void clawClose() {
   clawMotor.run(200);
-  delay(1400);
+  delay(1600);
   stopMotors();
 }
 
@@ -80,7 +80,7 @@ void turn90Right() {
     gyro.update();
     float current = gyro.getAngleZ();
     Serial.println(current);
-    if (current >= -93 && current <= -88) {
+    if (current >= -90.25 && current <= -89.75) {
       stopMotors();
       moving = false;
     } else {
@@ -102,8 +102,7 @@ void turn90Left() {
   while (moving) {
     gyro.update();
     float current = gyro.getAngleZ();
-    Serial.println(current);
-    if (current >= 88 && current <= 93) {
+    if (current >= 89.75 && current <= 90.25) {
       rightMotor.run(1 * 200 * rightMotorMultiplier);
       leftMotor.run(-1 * 200 * leftMotorMultiplier);
     } else {
@@ -126,7 +125,7 @@ void turn180() {
     gyro.update();
     float current = gyro.getAngleZ();
     Serial.println(current);
-    if (current <= 178 && current >= -178) {
+    if (current <= 179.75 && current >= -179.75) {
       rightMotor.run(-1 * 200 * rightMotorMultiplier);
       leftMotor.run(1 * 200 * leftMotorMultiplier);
     } else {
@@ -146,6 +145,7 @@ void forwardToStop() {
       object = true;
       stopMotors();
     }
+    if (distance > 399) { findDropZone(); }
   }
 }
 
@@ -155,6 +155,8 @@ float right = 0;
 
 
 void checkSurroundings() {
+  bool looping = true;
+  while (looping) {
   distance = ultra.distanceCm();
   forwardsf = distance;
   
@@ -167,17 +169,63 @@ void checkSurroundings() {
   
   distance = ultra.distanceCm();
   left = distance;
-
-  if (left > forwardsf && left > right) {
+  
+  
+  if (left >= forwardsf && left >= right) {
     forwardToStop();
+    looping = false;
   } else if (right > forwardsf && right > left) {
     turn180();
     forwardToStop();
+    looping = false;
   } else if (forwardsf > left && forwardsf > right) {
     turn90Right();
     forwardToStop();
+    looping = false;
+  } else {
+    continue;
+  }
   }
   
+}
+
+void findDropZone() {
+  bool passedZone = false;
+
+  while (!passedZone)
+  {
+    bool noRightWall = false;
+    bool noLeftWall = false;
+    rightMotor.run(200);
+    leftMotor.run(200);
+    delay(3000);
+    rightMotor.stop();
+    leftMotor.stop();
+    turn90Right();
+    distance = ultra.distanceCm();
+    if (distance > 100) { noRightWall = true; }
+    turn180();
+    distance = ultra.distanceCm();
+    if (distance > 100) { noLeftWall = true; }
+    turn90Right();
+    if (noRightWall == true && noLeftWall == true)
+    {
+      rightMotor.run(-200);
+      leftMotor.run(-200);
+      delay(3000);
+      rightMotor.stop();
+      leftMotor.stop();
+      dropItem();
+      
+    }
+  }
+}
+
+void dropItem()
+{
+  clawdown();
+  clawOpen();
+  delay(123456789);
 }
 
 void setup() {
@@ -187,7 +235,6 @@ void setup() {
 }
 
 bool waitingForCarrier = true;
-int cycles = 0;
 
 void loop() {
   // put your main code here, to run repeatedly:
@@ -199,16 +246,16 @@ void loop() {
       // it moves
       clawOpen();
       clawdown();
-      rightMotor.run(200 * rightMotorMultiplier);
+      /*rightMotor.run(200 * rightMotorMultiplier);
       leftMotor.run(200 * leftMotorMultiplier);
-      delay(350);
-      stopMotors();
+      delay(300);
+      stopMotors();*/
       clawClose();
       clawup();
       // backs up to avoid scraping other bot
       rightMotor.run(-1 * 100 * rightMotorMultiplier);
       leftMotor.run(-1 * 100 * leftMotorMultiplier);
-      delay(400);
+      delay(250);
       stopMotors();
       // 3250 for 180 turn
       // 180 degree turn
@@ -228,16 +275,15 @@ void loop() {
     } else {
       delay(50);
     }
-  } else if (waitingForCarrier == false) {
-    if (cycles <= 5) {
+  } 
+  else if (waitingForCarrier == false) {
+    distance = ultra.distanceCm();
+    if (distance < 400) {
       checkSurroundings();
-      cycles++;
+     }
+    else {
+      findDropZone();
     }
-    delay(50);
-    
+    delay(50); 
   }
-  
-
-  
-
 }
