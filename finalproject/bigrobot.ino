@@ -136,6 +136,26 @@ void turn180() {
 }
 
 void forwardToStop() {
+  uint8_t ReceiverCode;
+
+  if(infraredReceiverDecode.available()) {
+  if (IR_BUTTON_A) {
+    dropItem();
+  }
+  if (IR_BUTTON_LEFT) {
+    leftMotor.run(-1 * motorSpeed * leftMotorMultiplier);
+    rightMotor.run(1 * motorSpeed * rightMotorMultiplier);
+    delay(300);
+    stopMotors();
+}
+  if (IR_BUTTON_RIGHT) {
+    leftMotor.run(1 * motorSpeed * leftMotorMultiplier);
+    rightMotor.run(-1 * motorSpeed * rightMotorMultiplier);
+    delay(300);
+    stopMotors();
+  }
+
+}
   bool object = false;
   rightMotor.run(motorSpeed * rightMotorMultiplier);
   leftMotor.run(motorSpeed * leftMotorMultiplier);
